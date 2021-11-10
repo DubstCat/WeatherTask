@@ -14,11 +14,9 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class TodayDataPresenter {
-    val retrofit: Retrofit
-
-    val service: WeatherApi
-
-    //val todaysWeather:Observable<TodaysWeather>
+    private val retrofit: Retrofit
+    private val service: WeatherApi
+    lateinit var todaysWeather:TodaysWeather
 
     init {
         val logger = HttpLoggingInterceptor().also { it.level = HttpLoggingInterceptor.Level.BODY }
@@ -44,7 +42,9 @@ class TodayDataPresenter {
                 call: Call<TodaysWeatherJsonResponse>,
                 response: Response<TodaysWeatherJsonResponse>
             ) {
-                TODO("Not yet implemented")
+                response.body().let {
+                    TODO("$it. - implement observable TodaysWeather")
+                }
             }
 
             override fun onFailure(call: Call<TodaysWeatherJsonResponse>, t: Throwable) {
