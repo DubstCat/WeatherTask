@@ -331,3 +331,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# app/src/main/java/com/example/weathertask/utils/Constants.kt
