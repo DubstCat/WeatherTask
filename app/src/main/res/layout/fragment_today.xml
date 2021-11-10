@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="todaysWeather"
+            type="com.example.weathertask.TodaysWeather" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,10 +16,12 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="fitXY"
             android:layout_marginTop="32dp"
-            android:src="@mipmap/ic_launcher"
+
+            android:src="@drawable/weather_sunny"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -28,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="London, UK"
+            android:text="@{todaysWeather.city}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
@@ -40,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="22 C | Sunny"
+            android:text="@{todaysWeather.weatherAndTemp}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -48,8 +52,10 @@
 
         <View
             android:id="@+id/divider"
-            android:layout_width="409dp"
-            android:layout_height="1dp"
+            android:layout_width="300dp"
+            android:layout_height="2dp"
+
+            android:layout_marginTop="32dp"
             android:background="?android:attr/listDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,6 +65,7 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/divider">
 
@@ -77,16 +84,16 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@mipmap/ic_launcher" />
+                        style="@style/WeatherImage.Little"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/weather_pouring" />
 
                     <TextView
                         android:id="@+id/tv_todays_humidity"
                         style="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="57%" />
+                        android:text="@{todaysWeather.humidity}" />
 
                 </LinearLayout>
 
@@ -98,16 +105,15 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@mipmap/ic_launcher" />
+                        style="@style/WeatherImage.Little"
+                        android:src="@drawable/water_outline" />
 
                     <TextView
                         android:id="@+id/tv_todays_rainfall"
                         style="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1.0 mm" />
+                        android:text="@{todaysWeather.rainfall}" />
 
                 </LinearLayout>
 
@@ -119,17 +125,15 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-
-                        android:src="@mipmap/ic_launcher" />
+                        style="@style/WeatherImage.Little"
+                        android:src="@drawable/temperature_celsius" />
 
                     <TextView
                         android:id="@+id/tv_todays_pressure"
                         style="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1019 hPa" />
+                        android:text="@{todaysWeather.pressure}" />
 
                 </LinearLayout>
 
@@ -143,7 +147,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_margin="32dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -151,42 +155,40 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
 
-                        android:layout_margin="24dp"
+                        android:layout_marginRight="32dp"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@mipmap/ic_launcher" />
+                            style="@style/WeatherImage.Little"
+                            android:src="@drawable/weather_windy" />
 
                         <TextView
                             android:id="@+id/tv_todays_wind_speed"
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="20 km/h" />
+                            android:text="@{todaysWeather.windSpeed}" />
 
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="24dp"
+                        android:layout_marginLeft="32dp"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@mipmap/ic_launcher" />
+                            style="@style/WeatherImage.Little"
+                            android:src="@drawable/compass_outline" />
 
                         <TextView
                             android:id="@+id/tv_wind_degree"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:text="SE" />
+                            android:text="@{todaysWeather.windDegree}" />
 
                     </LinearLayout>
 
@@ -198,9 +200,9 @@
 
         <View
             android:id="@+id/divider2"
-            android:layout_width="409dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
+            android:layout_width="300dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="32dp"
             android:background="?android:attr/listDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -208,9 +210,9 @@
 
         <TextView
             android:id="@+id/tv_share"
+            style="@style/TextAppearance.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TextAppearance.MaterialComponents.Button"
             android:text="Share"
             android:textColor="@color/material_on_background_emphasis_high_type"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -27,7 +27,17 @@ class TodayFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_today, container, false)
         // Inflate the layout for this fragment
 
-        mPresenter.getTodaysWeather(111.111, 111.111)
+        //mPresenter.getTodaysWeather(111.111, 111.111)
+
+        binding.todaysWeather = TodaysWeather(
+            city = "London",
+            humidity = "57%",
+            rainfall = "100mm",
+            pressure = "1000 hPa",
+            windSpeed = "24 km/h",
+            weatherAndTemp = "Sunny | 22 `C",
+            windDegree = "SE"
+        )
 
         return binding.root
 

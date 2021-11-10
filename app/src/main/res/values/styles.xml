@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="WeatherImage">
+        <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <style name="WeatherImage.Little" parent="WeatherImage">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+    </style>
+</resources>

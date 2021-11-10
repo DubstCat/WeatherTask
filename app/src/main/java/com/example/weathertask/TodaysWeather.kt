@@ -4,9 +4,10 @@ import com.example.weathertask.utils.WindDegree
 
 data class TodaysWeather(
     val city:String,
-    val humidity: Int,
-    val rainfall: Double,
-    val pressure: Int,
-    val windSpeed: Int,
-    val windDegree: WindDegree
+    val humidity: String,
+    val rainfall: String,
+    val pressure: String,
+    val windSpeed: String,
+    val windDegree: String,
+    val weatherAndTemp:String
 )
