@@ -1,5 +1,6 @@
 package com.example.weathertask
 
+import android.util.Log
 import com.example.weathertask.retrofit.TodaysWeatherJsonResponse
 import com.example.weathertask.retrofit.WeatherApi
 import io.reactivex.rxjava3.core.Observable
@@ -19,16 +20,8 @@ class TodayDataPresenter {
     lateinit var todaysWeather:TodaysWeather
 
     init {
-        val logger = HttpLoggingInterceptor().also { it.level = HttpLoggingInterceptor.Level.BODY }
-
-        val okHttpClient: OkHttpClient = OkHttpClient().newBuilder()
-            .addInterceptor(logger)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
 
         retrofit = Retrofit.Builder()
-            .client(okHttpClient)
             .baseUrl("http://api.openweathermap.org/data/2.5/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -42,13 +35,12 @@ class TodayDataPresenter {
                 call: Call<TodaysWeatherJsonResponse>,
                 response: Response<TodaysWeatherJsonResponse>
             ) {
-                response.body().let {
-                    TODO("$it. - implement observable TodaysWeather")
-                }
+
+                TODO("Not implemented")
             }
 
             override fun onFailure(call: Call<TodaysWeatherJsonResponse>, t: Throwable) {
-                t.printStackTrace()
+                //t.printStackTrace()
                 TODO("Implement showing error")
             }
         })

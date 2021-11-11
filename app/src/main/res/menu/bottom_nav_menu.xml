@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/today"
-        android:title="Today" />
+        android:title="Today"
+        android:icon="@drawable/weather_sunny"/>
     <item
         android:id="@+id/forecast"
         android:title="Forecast" />
