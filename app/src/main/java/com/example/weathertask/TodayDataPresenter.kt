@@ -1,48 +1,82 @@
 package com.example.weathertask
 
-import android.util.Log
-import com.example.weathertask.retrofit.TodaysWeatherJsonResponse
+import androidx.lifecycle.MutableLiveData
 import com.example.weathertask.retrofit.WeatherApi
-import io.reactivex.rxjava3.core.Observable
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
-import java.util.concurrent.TimeUnit
+import okhttp3.OkHttpClient
+
+import okhttp3.logging.HttpLoggingInterceptor
+
 
 class TodayDataPresenter {
     private val retrofit: Retrofit
     private val service: WeatherApi
-    lateinit var todaysWeather:TodaysWeather
+    val todaysWeather = MutableLiveData<TodaysWeather>()
 
     init {
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BASIC
+        val client: OkHttpClient = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build()
 
         retrofit = Retrofit.Builder()
             .baseUrl("http://api.openweathermap.org/data/2.5/")
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+
 
         service = retrofit.create(WeatherApi::class.java)
     }
 
     fun getTodaysWeather(lat: Double, lon: Double) {
-        service.getTodaysWeather(lat, lon).enqueue(object : Callback<TodaysWeatherJsonResponse> {
-            override fun onResponse(
-                call: Call<TodaysWeatherJsonResponse>,
-                response: Response<TodaysWeatherJsonResponse>
-            ) {
+        service.getTodaysWeather(lat.toInt(), lon.toInt())
+            .enqueue(object : Callback<TodaysWeatherJsonResponse> {
+                override fun onResponse(
+                    call: Call<TodaysWeatherJsonResponse>,
+                    response: Response<TodaysWeatherJsonResponse>
+                ) {
+                    todaysWeather.value = TodaysWeather(
+                        city = response.body()?.name.toString() + ", " + response.body()?.sys?.country,
+                        humidity = response.body()?.main?.humidity?.toString() + " %",
+                        rainfall = "1 mm",
+                        pressure = response.body()?.main?.pressure.toString() + " hPa",
+                        windSpeed = response.body()?.wind?.speed?.toInt().toString() + " kmH",
+                        windDegree = getTextDegree(response.body()?.wind?.deg?.toInt()),
+                        tempAndWeather = (response.body()?.main?.temp?.toInt()
+                            ?.minus(273)).toString()
+                                + "`C | " +
+                                (response.body()?.weather?.get(0)?.main ?: (""))
 
-                TODO("Not implemented")
-            }
+                    )
+                }
 
-            override fun onFailure(call: Call<TodaysWeatherJsonResponse>, t: Throwable) {
-                //t.printStackTrace()
-                TODO("Implement showing error")
-            }
-        })
+                override fun onFailure(call: Call<TodaysWeatherJsonResponse>, t: Throwable) {
+                    t.printStackTrace()
+
+                }
+            })
     }
+
+    fun getTextDegree(deg: Int?) =
+        when (deg) {
+            in 0..29, in 330..360 -> "N"
+            in 30..59 -> "NE"
+            in 60..119 -> "E"
+            in 120..149 -> "SE"
+            in 150..209 -> "S"
+            in 210..239 -> "SW"
+            in 240..299 -> "W"
+            in 300..329 -> "NW"
+            else -> "no data"
+        }
+
+
 }

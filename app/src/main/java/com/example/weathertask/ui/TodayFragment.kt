@@ -22,9 +22,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import androidx.core.content.ContextCompat
 import android.location.Criteria
-
-
-
+import java.util.*
 
 
 class TodayFragment : Fragment() {
@@ -49,7 +47,10 @@ class TodayFragment : Fragment() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-
+        mPresenter.todaysWeather.observe(this, {
+            binding.todaysWeather = it
+        }
+        )
 
         for (element in perms) {
             if (ContextCompat.checkSelfPermission(
@@ -66,6 +67,7 @@ class TodayFragment : Fragment() {
         val criteria = Criteria()
         provider = locationManager.getBestProvider(criteria, false).toString()
 
+
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
             5000,
@@ -74,7 +76,9 @@ class TodayFragment : Fragment() {
             onLocationChanged(it)
         };
 
-
+        binding.tvShare.setOnClickListener {
+            mPresenter.getTodaysWeather(51.5098, -0.1180)
+        }
 
         binding.todaysWeather = TodaysWeather(
             city = "London",
@@ -82,7 +86,7 @@ class TodayFragment : Fragment() {
             rainfall = "100mm",
             pressure = "1000 hPa",
             windSpeed = "24 km/h",
-            weatherAndTemp = "22 `C | Sunny ",
+            tempAndWeather = "22 `C | Sunny ",
             windDegree = "SE"
         )
         return binding.root

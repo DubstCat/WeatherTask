@@ -9,5 +9,5 @@ data class TodaysWeather(
     val pressure: String,
     val windSpeed: String,
     val windDegree: String,
-    val weatherAndTemp:String
+    val tempAndWeather:String
 )
