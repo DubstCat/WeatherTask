@@ -9,10 +9,10 @@ class Clouds {
 
 class Coord {
     @SerializedName("lon")
-    var lon: Int? = null
+    var lon: Double? = null
 
     @SerializedName("lat")
-    var lat: Int? = null
+    var lat: Double? = null
 }
 
 class Main {

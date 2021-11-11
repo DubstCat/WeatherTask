@@ -1,43 +1,41 @@
 package com.example.weathertask.ui
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.example.weathertask.R
-import com.example.weathertask.TodayDataPresenter
-import com.example.weathertask.TodaysWeather
 import com.example.weathertask.databinding.FragmentTodayBinding
+import com.example.weathertask.presenters.TodayDataPresenter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import androidx.core.content.ContextCompat
-import android.location.Criteria
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import java.io.IOException
 import java.util.*
+import android.content.Intent
 
 
 class TodayFragment : Fragment() {
     lateinit var binding: FragmentTodayBinding
-    lateinit var updater: Runnable
-    lateinit var locationManager: LocationManager
-    lateinit var provider:String
-    val permsRequestCode = 1435232
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    val handler = Handler(Looper.getMainLooper())
-    var mPresenter = TodayDataPresenter()
-    val perms = arrayOf(
+    private val permsRequestCode = 1435232
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private val perms = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
+
+    var mPresenter = TodayDataPresenter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,13 +43,44 @@ class TodayFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_today, container, false)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireActivity())
 
         mPresenter.todaysWeather.observe(this, {
             binding.todaysWeather = it
+            binding.ivMain.setImageResource(
+                when(binding.todaysWeather?.weather){
+                    "Clear" -> R.drawable.weather_sunny
+                    "Rain" -> R.drawable.weather_rainy
+                    "snowy" -> R.drawable.weather_snowy
+                    "hail" -> R.drawable.weather_hail
+                    "Wind" -> R.drawable.weather_windy
+                    "Clouds" -> R.drawable.weather_cloudy
+                    else -> R.drawable.weather_sunny
+                }
+            )
         }
         )
 
+        getLocation()
+
+        binding.tvShare.setOnClickListener {
+            onShareWeather()
+        }
+        return binding.root
+    }
+
+    /**
+     * Function for getting new data on location
+     * */
+    fun onLocationChanged(city: String) {
+        mPresenter.getTodaysWeather(city)
+    }
+
+    fun getLocation() {
+        /**
+         * Request permissions for GPS
+         * */
         for (element in perms) {
             if (ContextCompat.checkSelfPermission(
                     requireActivity(),
@@ -62,45 +91,35 @@ class TodayFragment : Fragment() {
                 break
             }
         }
+        fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
+            val location = task.result
+            if (location != null) {
+                val geocoder = Geocoder(requireContext(), Locale.ENGLISH)
+                try {
+                    val adressList =
+                        geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                    onLocationChanged(adressList[0].locality)
+                } catch (e: IOException) {
+                    Toast.makeText(
+                        requireActivity(),
+                        "Your location is not found",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
-        locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val criteria = Criteria()
-        provider = locationManager.getBestProvider(criteria, false).toString()
-
-
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER,
-            5000,
-            10.0f
-        ) {
-            onLocationChanged(it)
-        };
-
-        binding.tvShare.setOnClickListener {
-            mPresenter.getTodaysWeather(51.5098, -0.1180)
+            }
         }
+    }
 
-        binding.todaysWeather = TodaysWeather(
-            city = "London",
-            humidity = "57%",
-            rainfall = "100mm",
-            pressure = "1000 hPa",
-            windSpeed = "24 km/h",
-            tempAndWeather = "22 `C | Sunny ",
-            windDegree = "SE"
+    private fun onShareWeather() {
+        val sendIntent = Intent()
+        sendIntent.action = Intent.ACTION_SEND
+        sendIntent.putExtra(
+            Intent.EXTRA_TEXT,
+            "Today is ${binding.todaysWeather?.tempAndWeather} in ${binding.todaysWeather?.city}"
         )
-        return binding.root
+        sendIntent.type = "text/plain"
+        startActivity(sendIntent)
     }
-
-    private fun initializeUpdater() {
-        val updater = Runnable {
-            handler.postDelayed(updater, 1000)
-        }
-    }
-
-    fun onLocationChanged(location: Location){
-        mPresenter.getTodaysWeather(location.latitude, location.longitude)
-    }
-
 
 }

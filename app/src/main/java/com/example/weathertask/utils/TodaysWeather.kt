@@ -1,6 +1,5 @@
-package com.example.weathertask
+package com.example.weathertask.utils
 
-import com.example.weathertask.utils.WindDegree
 
 data class TodaysWeather(
     val city:String,
@@ -9,5 +8,6 @@ data class TodaysWeather(
     val pressure: String,
     val windSpeed: String,
     val windDegree: String,
-    val tempAndWeather:String
+    val tempAndWeather:String,
+    val weather: String
 )

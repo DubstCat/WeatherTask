@@ -1,6 +1,8 @@
-package com.example.weathertask
+package com.example.weathertask.presenters
 
 import androidx.lifecycle.MutableLiveData
+import com.example.weathertask.utils.TodaysWeather
+import com.example.weathertask.TodaysWeatherJsonResponse
 import com.example.weathertask.retrofit.WeatherApi
 
 import retrofit2.Call
@@ -36,8 +38,8 @@ class TodayDataPresenter {
         service = retrofit.create(WeatherApi::class.java)
     }
 
-    fun getTodaysWeather(lat: Double, lon: Double) {
-        service.getTodaysWeather(lat.toInt(), lon.toInt())
+    fun getTodaysWeather(city:String) {
+        service.getTodaysWeather(city)
             .enqueue(object : Callback<TodaysWeatherJsonResponse> {
                 override fun onResponse(
                     call: Call<TodaysWeatherJsonResponse>,
@@ -53,8 +55,8 @@ class TodayDataPresenter {
                         tempAndWeather = (response.body()?.main?.temp?.toInt()
                             ?.minus(273)).toString()
                                 + "`C | " +
-                                (response.body()?.weather?.get(0)?.main ?: (""))
-
+                                (response.body()?.weather?.get(0)?.main ?: ("")),
+                        weather = response.body()?.weather?.get(0)?.main?:("")
                     )
                 }
 
