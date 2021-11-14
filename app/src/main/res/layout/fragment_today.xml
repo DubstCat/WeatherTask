@@ -6,7 +6,7 @@
     <data>
         <variable
             name="todaysWeather"
-            type="com.example.weathertask.utils.TodaysWeather" />
+            type="com.example.weathertask.utils.today.TodaysWeather" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,4 +1,4 @@
-package com.example.weathertask.utils
+package com.example.weathertask.utils.today
 
 
 data class TodaysWeather(

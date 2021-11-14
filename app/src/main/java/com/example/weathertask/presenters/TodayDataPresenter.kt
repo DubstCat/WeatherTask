@@ -1,7 +1,7 @@
 package com.example.weathertask.presenters
 
 import androidx.lifecycle.MutableLiveData
-import com.example.weathertask.utils.TodaysWeather
+import com.example.weathertask.utils.today.TodaysWeather
 import com.example.weathertask.TodaysWeatherJsonResponse
 import com.example.weathertask.retrofit.WeatherApi
 
