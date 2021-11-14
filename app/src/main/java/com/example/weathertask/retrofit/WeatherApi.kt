@@ -14,7 +14,13 @@ interface WeatherApi {
     @GET("weather")
     fun getTodaysWeather(
         @Query("q") city: String,
-        @Query("appid")appid:String = apikey
+        @Query("appid") appid: String = apikey
 
     ): Call<TodaysWeatherJsonResponse>
+
+    @GET("forecast")
+    fun getForecast(
+        @Query("q") city: String,
+        @Query("appid") appid: String = apikey
+    ): Call<ForecastJsonResponse>
 }
