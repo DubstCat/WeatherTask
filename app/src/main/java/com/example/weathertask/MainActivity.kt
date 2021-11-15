@@ -1,26 +1,18 @@
 package com.example.weathertask
 
-import android.Manifest
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.Menu
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.example.weathertask.databinding.ActivityMainBinding
 import com.example.weathertask.ui.ForecastFragment
 import com.example.weathertask.ui.TodayFragment
 
+
 class MainActivity : AppCompatActivity() {
     lateinit var binding:ActivityMainBinding
-    val handler = Handler(Looper.getMainLooper())
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,14 +32,14 @@ class MainActivity : AppCompatActivity() {
                     setCurrentFragment(fragmentForecast)
                 }
             }
-
             false
         }
-
     }
 
     private fun setCurrentFragment(fragment:Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.main_fragment, fragment).commit()
     }
+
+
 
 }

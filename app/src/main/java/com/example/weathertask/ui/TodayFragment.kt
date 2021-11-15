@@ -1,11 +1,10 @@
 package com.example.weathertask.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
-import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,16 +13,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.example.weathertask.City
 import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentTodayBinding
 import com.example.weathertask.presenters.TodayDataPresenter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import java.io.IOException
 import java.util.*
-import android.content.Intent
 
 
 class TodayFragment : Fragment() {
@@ -62,7 +59,11 @@ class TodayFragment : Fragment() {
         }
         )
 
-        getLocation()
+        /** Заглушка потому что перестала работать геолокация*/
+        //getLocation()
+        mPresenter.getTodaysWeather("Minsk")
+        City.name = "Minsk"
+        /** Заглушка потому что перестала работать геолокация*/
 
         binding.tvShare.setOnClickListener {
             onShareWeather()
@@ -93,12 +94,14 @@ class TodayFragment : Fragment() {
         }
         fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
             val location = task.result
+
             if (location != null) {
                 val geocoder = Geocoder(requireContext(), Locale.ENGLISH)
                 try {
                     val adressList =
                         geocoder.getFromLocation(location.latitude, location.longitude, 1)
                     onLocationChanged(adressList[0].locality)
+                    City.name = adressList[0].locality
                 } catch (e: IOException) {
                     Toast.makeText(
                         requireActivity(),
@@ -106,7 +109,6 @@ class TodayFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
             }
         }
     }

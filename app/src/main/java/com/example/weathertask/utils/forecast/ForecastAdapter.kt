@@ -1,43 +1,56 @@
 package com.example.weathertask.utils.forecast
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weathertask.AbleToBind
+import com.example.weathertask.R
 import com.example.weathertask.utils.forecast.ForecastAdapter.ViewHolderType.TYPE_TEXT
 import com.example.weathertask.databinding.ItemDaytextBinding
 import com.example.weathertask.databinding.ItemForecastBinding
+import com.example.weathertask.utils.forecast.ForecastAdapter.ViewHolderType.TYPE_FORECAST
 
-class ForecastAdapter(val forecasts: List<ForecastItem>) :
+class ForecastAdapter(var forecasts: MutableList<ForecastItem>) :
     ListAdapter<ForecastItem, RecyclerView.ViewHolder>(
         ForecastDiffCallback()
     ) {
 
 
-    class ForecastViewHolder(val binding: ItemForecastBinding) :
-        RecyclerView.ViewHolder(binding.root), AbleToBind {
-        override fun bind(item: ForecastItem) {
-            binding.forecastItem = item
+    class ForecastViewHolder(val view: View) :
+        RecyclerView.ViewHolder(view), AbleToBind {
+        private val binding = DataBindingUtil.bind<ItemForecastBinding>(view)
+
+        override fun bind(item: ForecastItem?) {
+            binding?.forecastItem = item
         }
     }
 
-    class DayTextViewHolder(val binding: ItemDaytextBinding) :
-        RecyclerView.ViewHolder(binding.root), AbleToBind {
-        override fun bind(item: ForecastItem) {
-            binding.forecastItem = item
+    class DayTextViewHolder(val view: View) :
+        RecyclerView.ViewHolder(view), AbleToBind {
+        private val binding = DataBindingUtil.bind<ItemDaytextBinding>(view)
+
+        override fun bind(item: ForecastItem?) {
+            binding?.forecastItem = item
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
         return if (viewType == TYPE_TEXT) {
-            val binding = ItemDaytextBinding.inflate(inflater, parent, false)
-            DayTextViewHolder(binding)
+            val inflater = LayoutInflater.from(parent.context)
+            val view = inflater.inflate(viewType, parent, false)
+            DayTextViewHolder(view)
         } else {
-            val binding = ItemForecastBinding.inflate(inflater, parent, false)
-            ForecastViewHolder(binding)
+            val inflater = LayoutInflater.from(parent.context)
+            val view = inflater.inflate(viewType, parent, false)
+            ForecastViewHolder(view)
         }
+    }
+
+    override fun getItemCount(): Int = forecasts.size
+    override fun getItemViewType(position: Int): Int {
+        return forecasts[position].type?: TYPE_FORECAST
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -46,8 +59,8 @@ class ForecastAdapter(val forecasts: List<ForecastItem>) :
 
 
     object ViewHolderType {
-        val TYPE_TEXT = 2142461
-        val TYPE_FORECAST = 6666666
+        val TYPE_TEXT = R.layout.item_daytext
+        val TYPE_FORECAST = R.layout.item_forecast
     }
 
 }

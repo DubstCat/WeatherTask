@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import com.example.weathertask.utils.today.TodaysWeather
 import com.example.weathertask.TodaysWeatherJsonResponse
 import com.example.weathertask.retrofit.WeatherApi
-
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -58,6 +57,7 @@ class TodayDataPresenter {
                                 (response.body()?.weather?.get(0)?.main ?: ("")),
                         weather = response.body()?.weather?.get(0)?.main?:("")
                     )
+
                 }
 
                 override fun onFailure(call: Call<TodaysWeatherJsonResponse>, t: Throwable) {

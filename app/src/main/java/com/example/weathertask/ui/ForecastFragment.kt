@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.weathertask.City
 import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentForecastBinding
 import com.example.weathertask.presenters.ForecastDataPresenter
 import com.example.weathertask.utils.forecast.ForecastAdapter
+import com.example.weathertask.utils.forecast.ForecastItem
 
 
 class ForecastFragment : Fragment() {
@@ -23,10 +26,14 @@ class ForecastFragment : Fragment() {
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false)
 
-        mPresenter.getForecast("Minsk")
-
-        binding.rvForecast.adapter = ForecastAdapter(mPresenter.forecasts.value!!.toList())
+        binding.rvForecast.layoutManager = LinearLayoutManager(context)
+        val list = mutableListOf<ForecastItem>()
+        val adapter = ForecastAdapter(list)
+        mPresenter.getForecast(City.name, adapter)
+        binding.rvForecast.adapter = adapter
 
         return binding.root
     }
+
+
 }

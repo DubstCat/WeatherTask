@@ -1,7 +1,5 @@
-package com.example.weathertask
-
-import com.example.weathertask.utils.forecast.ForecastItem
+package com.example.weathertask.utils.forecast
 
 interface AbleToBind {
-    fun bind(item: ForecastItem)
+    fun bind(item: ForecastItem?)
 }
