@@ -24,6 +24,12 @@ class ForecastAdapter(var forecasts: MutableList<ForecastItem>) :
 
         override fun bind(item: ForecastItem?) {
             binding?.forecastItem = item
+            binding?.ivForecastWeather?.setImageResource(when(item?.weather){
+                "Clear"-> R.drawable.weather_sunny
+                "Clouds" -> R.drawable.weather_cloudy
+                "Rain" -> R.drawable.weather_rainy
+                else -> R.drawable.weather_sunny
+            })
         }
     }
 

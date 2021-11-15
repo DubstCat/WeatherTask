@@ -14,19 +14,19 @@ import com.example.weathertask.presenters.ForecastDataPresenter
 import com.example.weathertask.utils.forecast.ForecastAdapter
 import com.example.weathertask.utils.forecast.ForecastItem
 
-
 class ForecastFragment : Fragment() {
 
     lateinit var binding: FragmentForecastBinding
-    var mPresenter = ForecastDataPresenter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val mPresenter = ForecastDataPresenter()
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false)
 
         binding.rvForecast.layoutManager = LinearLayoutManager(context)
+
         val list = mutableListOf<ForecastItem>()
         val adapter = ForecastAdapter(list)
         mPresenter.getForecast(City.name, adapter)
@@ -34,6 +34,4 @@ class ForecastFragment : Fragment() {
 
         return binding.root
     }
-
-
 }

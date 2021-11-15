@@ -13,15 +13,15 @@ import com.example.weathertask.ui.TodayFragment
 class MainActivity : AppCompatActivity() {
     lateinit var binding:ActivityMainBinding
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
         val fragmentToday = TodayFragment()
         val fragmentForecast = ForecastFragment()
 
         supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday).commit()
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         binding.bottomNavBar.setOnNavigationItemSelectedListener { item ->
             when(item.itemId){
