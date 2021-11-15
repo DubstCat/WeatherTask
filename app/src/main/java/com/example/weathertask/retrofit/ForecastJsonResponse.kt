@@ -1,5 +1,7 @@
 package com.example.weathertask.retrofit
 
+import com.google.gson.annotations.SerializedName
+
 
 class ForecastJsonResponse {
     var cod: String? = null
@@ -37,6 +39,7 @@ class ForecastJsonResponse {
         var visibility: Int? = null
         var pop: Double? = null
         var sys: Sys? = null
+        @SerializedName("dt_txt")
         var dtTxt: String? = null
         var rain: Rain? = null
         var snow: Snow? = null
