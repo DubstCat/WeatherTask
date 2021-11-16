@@ -23,6 +23,8 @@ import com.example.weathertask.ui.ForecastFragment
 import com.example.weathertask.ui.TodayFragment
 import com.example.weathertask.utils.CityObservable
 import com.google.android.gms.location.*
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.disposables.Disposable
 import java.io.IOException
 import java.util.*
 
@@ -41,6 +43,26 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
+        CityObservable.name.subscribe(object :Observer<String>{
+            override fun onSubscribe(d: Disposable?) {
+                // pass
+            }
+
+            override fun onNext(t: String?) {
+                supportActionBar?.title = "Weather"
+            }
+
+            override fun onError(e: Throwable?) {
+                e?.printStackTrace()
+            }
+
+            override fun onComplete() {
+                // pass
+            }
+        })
+
+        supportActionBar?.title = "Couldn't receive location"
 
         checker = Runnable {
             if (!stopChecking)

@@ -22,6 +22,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 class ForecastFragment : Fragment() {
 
     lateinit var binding: FragmentForecastBinding
+    lateinit var adapter:ForecastAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +34,7 @@ class ForecastFragment : Fragment() {
         binding.rvForecast.layoutManager = LinearLayoutManager(context)
 
         val list = mutableListOf<ForecastItem>()
-        val adapter = ForecastAdapter(list)
+        adapter = ForecastAdapter(list)
 
         binding.rvForecast.adapter = adapter
 
@@ -43,7 +44,10 @@ class ForecastFragment : Fragment() {
             }
 
             override fun onNext(t: String?) {
-                mPresenter.getForecast(t?:"London", adapter)
+                if (t!=null) {
+                    adapter.forecasts.clear()
+                    mPresenter.getForecast(t, adapter)
+                }
             }
 
             override fun onError(e: Throwable?) {
@@ -58,5 +62,11 @@ class ForecastFragment : Fragment() {
 
 
         return binding.root
+    }
+
+    private fun showWarning() {
+        adapter.forecasts = arrayListOf(ForecastItem(
+            day = "Couldn't receive data"
+            ,type = ForecastAdapter.ViewHolderType.TYPE_TEXT))
     }
 }

@@ -45,7 +45,7 @@ class ForecastDataPresenter {
                 response: Response<ForecastJsonResponse>
             ) {
                 if (response.isSuccessful) {
-
+                    forecasts.clear()
                     val responseList = mutableListOf<ForecastJsonResponse.List>()
                     responseList.addAll(response.body()?.list?.toMutableList()!!)
                     responseList.forEach {
@@ -78,13 +78,13 @@ class ForecastDataPresenter {
         list.add(0, ForecastItem(day = "Today", type = ForecastAdapter.ViewHolderType.TYPE_TEXT))
         var i = 1
         while (i < list.size-1) {
-            val day = days.getCurrentDay()
             if (list[i].day != list[i + 1].day) {
+                days++
                 list.add(
                     i+1,
-                    ForecastItem(day = day, type = ForecastAdapter.ViewHolderType.TYPE_TEXT)
+                    ForecastItem(day = days.getCurrentDay(), type = ForecastAdapter.ViewHolderType.TYPE_TEXT)
                 )
-                days++
+
                 i+=2
             }
             i++

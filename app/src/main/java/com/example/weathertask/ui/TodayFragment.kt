@@ -32,7 +32,11 @@ class TodayFragment : Fragment() {
 
         CityObservable.name.subscribe(object : Observer<String> {
             override fun onNext(t: String?) {
-                getWeatherOnLocation(t ?: "London")
+                if (t!=null){
+                    getWeatherOnLocation(t)
+                }else{
+                    binding.tvWeatherAndTemp.text = "Couldn't get location"
+                }
             }
 
             override fun onError(e: Throwable?) {
