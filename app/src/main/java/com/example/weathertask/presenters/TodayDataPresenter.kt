@@ -4,6 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import com.example.weathertask.utils.today.TodaysWeather
 import com.example.weathertask.TodaysWeatherJsonResponse
 import com.example.weathertask.retrofit.WeatherApi
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.subjects.PublishSubject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,7 +20,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 class TodayDataPresenter {
     private val retrofit: Retrofit
     private val service: WeatherApi
-    val todaysWeather = MutableLiveData<TodaysWeather>()
+    lateinit var todaysWeather:TodaysWeather
+    var todaysWeatherObservable = PublishSubject.create<TodaysWeather>()
 
     init {
         val logging = HttpLoggingInterceptor()
@@ -44,7 +48,7 @@ class TodayDataPresenter {
                     call: Call<TodaysWeatherJsonResponse>,
                     response: Response<TodaysWeatherJsonResponse>
                 ) {
-                    todaysWeather.value = TodaysWeather(
+                    todaysWeather = TodaysWeather(
                         city = response.body()?.name.toString() + ", " + response.body()?.sys?.country,
                         humidity = response.body()?.main?.humidity?.toString() + " %",
                         rainfall = "1 mm",
@@ -57,7 +61,7 @@ class TodayDataPresenter {
                                 (response.body()?.weather?.get(0)?.main ?: ("")),
                         weather = response.body()?.weather?.get(0)?.main?:("")
                     )
-
+                        todaysWeatherObservable.onNext(todaysWeather)
                 }
 
                 override fun onFailure(call: Call<TodaysWeatherJsonResponse>, t: Throwable) {
@@ -66,6 +70,8 @@ class TodayDataPresenter {
                 }
             })
     }
+
+
 
     fun getTextDegree(deg: Int?) =
         when (deg) {

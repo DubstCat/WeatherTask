@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +18,11 @@ import com.example.weathertask.City
 import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentTodayBinding
 import com.example.weathertask.presenters.TodayDataPresenter
+import com.example.weathertask.utils.today.TodaysWeather
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.disposables.Disposable
 import java.io.IOException
 import java.util.*
 
@@ -43,21 +47,36 @@ class TodayFragment : Fragment() {
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        mPresenter.todaysWeather.observe(this, {
-            binding.todaysWeather = it
-            binding.ivMain.setImageResource(
-                when(binding.todaysWeather?.weather){
-                    "Clear" -> R.drawable.weather_sunny
-                    "Rain" -> R.drawable.weather_rainy
-                    "snowy" -> R.drawable.weather_snowy
-                    "hail" -> R.drawable.weather_hail
-                    "Wind" -> R.drawable.weather_windy
-                    "Clouds" -> R.drawable.weather_cloudy
-                    else -> R.drawable.weather_sunny
-                }
-            )
-        }
-        )
+        
+        mPresenter.todaysWeatherObservable.subscribe(object :Observer<TodaysWeather>{
+            override fun onNext(it: TodaysWeather?) {
+                binding.todaysWeather = it
+                binding.ivMain.setImageResource(
+                    when(binding.todaysWeather?.weather){
+                        "Clear" -> R.drawable.weather_sunny
+                        "Rain" -> R.drawable.weather_rainy
+                        "snowy" -> R.drawable.weather_snowy
+                        "hail" -> R.drawable.weather_hail
+                        "Wind" -> R.drawable.weather_windy
+                        "Clouds" -> R.drawable.weather_cloudy
+                        else -> R.drawable.weather_sunny
+                    }
+                )
+            }
+
+            override fun onError(e: Throwable?) {
+                e?.printStackTrace()
+            }
+
+            override fun onComplete() {
+                Log.d("TodaysObservable","Complete")
+            }
+
+            override fun onSubscribe(d: Disposable?) {
+                // pass
+            }
+
+        })
 
         /** Заглушка потому что перестала работать геолокация*/
         //getLocation()
