@@ -149,7 +149,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="32dp"
+
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -213,11 +213,11 @@
         <TextView
 
             android:id="@+id/tv_share"
-            style="@style/TextAppearance.MaterialComponents.Button"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Share"
-            android:textColor="@color/material_on_background_emphasis_high_type"
+            android:text="SHARE"
+            android:textColor="@color/design_default_color_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -1,14 +1,11 @@
 package com.example.weathertask.presenters
 
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.example.weathertask.retrofit.ForecastJsonResponse
 import com.example.weathertask.retrofit.WeatherApi
 import com.example.weathertask.utils.forecast.DaysOfTheWeek
 import com.example.weathertask.utils.forecast.ForecastAdapter
 import com.example.weathertask.utils.forecast.ForecastItem
-import com.example.weathertask.utils.today.TodaysWeather
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -16,7 +13,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ForecastDataPresenter {
@@ -56,7 +52,7 @@ class ForecastDataPresenter {
                         forecasts.add(
                             ForecastItem(
                                 timestamp = it.dtTxt?.subSequence(11, 16)?.toString(),
-                                temp = (it.main?.temp?.toInt()?.minus(273)).toString() + "`C",
+                                temp = (it.main?.temp?.toInt()?.minus(273)).toString() + "°C",
                                 weather = it.weather?.get(0)?.main,
                                 day = it.dtTxt?.subSequence(8, 10)?.toString()
                             )
@@ -76,24 +72,14 @@ class ForecastDataPresenter {
     }
 
 
-    fun getTimeFromLong(timeInMilliseconds: Long): String? {
-        var mytime = ""
-        val minute = timeInMilliseconds / (1000 * 60) % 60
-        val hour = timeInMilliseconds / (1000 * 60 * 60) % 24
-        mytime = String.format("%02d:%02d", hour, minute)
-        return mytime
-    }
-
     fun addDayText(list: MutableList<ForecastItem>) {
         var days = DaysOfTheWeek()
-        val listCopy = list
-        val size = list.size
         days.setCurrentDay(getDaysIndex(getTodaysDayOfTheWeek()))
         list.add(0, ForecastItem(day = "Today", type = ForecastAdapter.ViewHolderType.TYPE_TEXT))
         var i = 1
-        while (i < size) {
+        while (i < list.size-1) {
             val day = days.getCurrentDay()
-            if (listCopy[i].day != listCopy[i + 1].day) {
+            if (list[i].day != list[i + 1].day) {
                 list.add(
                     i+1,
                     ForecastItem(day = day, type = ForecastAdapter.ViewHolderType.TYPE_TEXT)

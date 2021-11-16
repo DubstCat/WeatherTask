@@ -53,7 +53,7 @@ class TodayDataPresenter {
                         windDegree = getTextDegree(response.body()?.wind?.deg?.toInt()),
                         tempAndWeather = (response.body()?.main?.temp?.toInt()
                             ?.minus(273)).toString()
-                                + "`C | " +
+                                + "°C | " +
                                 (response.body()?.weather?.get(0)?.main ?: ("")),
                         weather = response.body()?.weather?.get(0)?.main?:("")
                     )
