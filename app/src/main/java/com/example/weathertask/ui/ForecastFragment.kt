@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weathertask.City
+import com.example.weathertask.utils.City
 import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentForecastBinding
 import com.example.weathertask.presenters.ForecastDataPresenter

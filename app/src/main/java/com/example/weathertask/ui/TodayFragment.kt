@@ -14,7 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import com.example.weathertask.City
+import com.example.weathertask.utils.City
 import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentTodayBinding
 import com.example.weathertask.presenters.TodayDataPresenter
