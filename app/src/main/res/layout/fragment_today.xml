@@ -128,7 +128,7 @@
 
                     <ImageView
                         style="@style/WeatherImage.Little"
-                        android:src="@drawable/temperature_celsius" />
+                        android:src="@drawable/alpha_p_circle_outline" />
 
                     <TextView
                         android:id="@+id/tv_todays_pressure"

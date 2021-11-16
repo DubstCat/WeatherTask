@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.weathertask.databinding.ActivityMainBinding
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         CityObservable.name.subscribe(getActionBarObserver())
 
-        supportActionBar?.title = "Couldn't receive location"
+        supportActionBar?.title = "Couldn't retrieve data"
 
         checker = Runnable {
             if (!stopChecking)
@@ -57,18 +56,21 @@ class MainActivity : AppCompatActivity() {
 
         getLocation()
 
+
         val fragmentToday = TodayFragment()
         val fragmentForecast = ForecastFragment()
 
+        supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentForecast)
+            .hide(fragmentForecast).commit()
         supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday).commit()
 
         binding.bottomNavBar.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.today -> {
-                    setCurrentFragment(fragmentToday)
+                    setCurrentFragment(fragmentForecast, fragmentToday)
                 }
                 R.id.forecast -> {
-                    setCurrentFragment(fragmentForecast)
+                    setCurrentFragment(fragmentToday, fragmentForecast)
                 }
             }
             false
@@ -142,9 +144,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
         }
         LocationServices.getFusedLocationProviderClient(this)
             .requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.getMainLooper())
+
     }
 
     override fun onResume() {
@@ -152,8 +156,8 @@ class MainActivity : AppCompatActivity() {
         stopChecking = false
     }
 
-    private fun setCurrentFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.main_fragment, fragment).commit()
+    private fun setCurrentFragment(from: Fragment, to: Fragment) {
+        supportFragmentManager.beginTransaction().hide(from).show(to).commit()
     }
 
     private fun getActionBarObserver(): Observer<String> = object : Observer<String> {
@@ -174,5 +178,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 
 }

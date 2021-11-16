@@ -8,14 +8,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentForecastBinding
 import com.example.weathertask.presenters.ForecastDataPresenter
 import com.example.weathertask.utils.CityObservable
 import com.example.weathertask.utils.forecast.ForecastAdapter
-import com.example.weathertask.utils.forecast.ForecastItem
-
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
 
@@ -45,6 +42,7 @@ class ForecastFragment : Fragment() {
         override fun onNext(t: String?) {
             if (t != null) {
                 adapter.forecasts.clear()
+                adapter.notifyDataSetChanged()
                 mPresenter.getForecast(t, adapter)
             }
         }
@@ -57,6 +55,5 @@ class ForecastFragment : Fragment() {
             Log.d("ForecastCityObserver", "onComplete")
         }
     }
-
 
 }
