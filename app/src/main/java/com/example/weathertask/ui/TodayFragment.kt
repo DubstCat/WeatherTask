@@ -47,16 +47,15 @@ class TodayFragment : Fragment() {
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        
-        mPresenter.todaysWeatherObservable.subscribe(object :Observer<TodaysWeather>{
+        mPresenter.todaysWeatherObservable.subscribe(object : Observer<TodaysWeather> {
             override fun onNext(it: TodaysWeather?) {
                 binding.todaysWeather = it
                 binding.ivMain.setImageResource(
-                    when(binding.todaysWeather?.weather){
+                    when (binding.todaysWeather?.weather) {
                         "Clear" -> R.drawable.weather_sunny
                         "Rain" -> R.drawable.weather_rainy
-                        "snowy" -> R.drawable.weather_snowy
-                        "hail" -> R.drawable.weather_hail
+                        "Snow" -> R.drawable.weather_snowy
+                        "Hail" -> R.drawable.weather_hail
                         "Wind" -> R.drawable.weather_windy
                         "Clouds" -> R.drawable.weather_cloudy
                         else -> R.drawable.weather_sunny
@@ -69,13 +68,12 @@ class TodayFragment : Fragment() {
             }
 
             override fun onComplete() {
-                Log.d("TodaysObservable","Complete")
+                Log.d("TodaysObservable", "Complete")
             }
 
             override fun onSubscribe(d: Disposable?) {
                 // pass
             }
-
         })
 
         /** Заглушка потому что перестала работать геолокация*/
@@ -142,5 +140,4 @@ class TodayFragment : Fragment() {
         sendIntent.type = "text/plain"
         startActivity(sendIntent)
     }
-
 }

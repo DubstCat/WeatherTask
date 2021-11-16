@@ -24,12 +24,18 @@ class ForecastAdapter(var forecasts: MutableList<ForecastItem>) :
 
         override fun bind(item: ForecastItem?) {
             binding?.forecastItem = item
-            binding?.ivForecastWeather?.setImageResource(when(item?.weather){
-                "Clear"-> R.drawable.weather_sunny
-                "Clouds" -> R.drawable.weather_cloudy
-                "Rain" -> R.drawable.weather_rainy
-                else -> R.drawable.weather_sunny
-            })
+            binding?.ivForecastWeather?.setImageResource(
+                when (item?.weather) {
+                    "Clear" -> R.drawable.weather_sunny
+                    "Clouds" -> R.drawable.weather_cloudy
+                    "Rain" -> R.drawable.weather_rainy
+                    "Snow" -> R.drawable.weather_snowy
+                    "Hail" -> R.drawable.weather_hail
+                    "Pouring" -> R.drawable.weather_pouring
+                    "Storm " -> R.drawable.weather_lightning
+                    else -> R.drawable.weather_sunny
+                }
+            )
         }
     }
 
@@ -56,7 +62,7 @@ class ForecastAdapter(var forecasts: MutableList<ForecastItem>) :
 
     override fun getItemCount(): Int = forecasts.size
     override fun getItemViewType(position: Int): Int {
-        return forecasts[position].type?: TYPE_FORECAST
+        return forecasts[position].type ?: TYPE_FORECAST
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
