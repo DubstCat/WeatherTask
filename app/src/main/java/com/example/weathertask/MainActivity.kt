@@ -31,10 +31,10 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-    val handler = Handler(Looper.getMainLooper())
     lateinit var checker: Runnable
-    var stopChecking = false
+    val handler = Handler(Looper.getMainLooper())
     val permsRequestCode = 12413423
+    var stopChecking = false
     private val perms = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -44,23 +44,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        CityObservable.name.subscribe(object :Observer<String>{
-            override fun onSubscribe(d: Disposable?) {
-                // pass
-            }
-
-            override fun onNext(t: String?) {
-                supportActionBar?.title = "Weather"
-            }
-
-            override fun onError(e: Throwable?) {
-                e?.printStackTrace()
-            }
-
-            override fun onComplete() {
-                // pass
-            }
-        })
+        CityObservable.name.subscribe(getActionBarObserver())
 
         supportActionBar?.title = "Couldn't receive location"
 
@@ -90,6 +74,7 @@ class MainActivity : AppCompatActivity() {
             false
         }
     }
+
 
     fun checkIfGpsEnabled() {
         val manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager;
@@ -134,7 +119,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         val mLocationRequest: LocationRequest = LocationRequest.create()
         mLocationRequest.interval = 60000
         mLocationRequest.fastestInterval = 5000
@@ -171,4 +155,24 @@ class MainActivity : AppCompatActivity() {
     private fun setCurrentFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.main_fragment, fragment).commit()
     }
+
+    private fun getActionBarObserver(): Observer<String> = object : Observer<String> {
+        override fun onSubscribe(d: Disposable?) {
+            // pass
+        }
+
+        override fun onNext(t: String?) {
+            supportActionBar?.title = "Weather"
+        }
+
+        override fun onError(e: Throwable?) {
+            e?.printStackTrace()
+        }
+
+        override fun onComplete() {
+            // pass
+        }
+    }
+
+
 }

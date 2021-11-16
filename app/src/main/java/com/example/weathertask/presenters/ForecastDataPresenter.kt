@@ -18,7 +18,7 @@ import java.util.*
 class ForecastDataPresenter {
     private val retrofit: Retrofit
     private val service: WeatherApi
-    val forecasts = mutableListOf<ForecastItem>()
+
 
     init {
         val logging = HttpLoggingInterceptor()
@@ -33,19 +33,18 @@ class ForecastDataPresenter {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-
-
         service = retrofit.create(WeatherApi::class.java)
     }
 
     fun getForecast(city: String, adapter: ForecastAdapter): MutableList<ForecastItem> {
+        val forecasts = mutableListOf<ForecastItem>()
         service.getForecast(city).enqueue(object : Callback<ForecastJsonResponse> {
             override fun onResponse(
                 call: Call<ForecastJsonResponse>,
                 response: Response<ForecastJsonResponse>
             ) {
                 if (response.isSuccessful) {
-                    forecasts.clear()
+
                     val responseList = mutableListOf<ForecastJsonResponse.List>()
                     responseList.addAll(response.body()?.list?.toMutableList()!!)
                     responseList.forEach {
@@ -77,15 +76,17 @@ class ForecastDataPresenter {
         days.setCurrentDay(getDaysIndex(getTodaysDayOfTheWeek()))
         list.add(0, ForecastItem(day = "Today", type = ForecastAdapter.ViewHolderType.TYPE_TEXT))
         var i = 1
-        while (i < list.size-1) {
+        while (i < list.size - 1) {
             if (list[i].day != list[i + 1].day) {
                 days++
                 list.add(
-                    i+1,
-                    ForecastItem(day = days.getCurrentDay(), type = ForecastAdapter.ViewHolderType.TYPE_TEXT)
+                    i + 1,
+                    ForecastItem(
+                        day = days.getCurrentDay(),
+                        type = ForecastAdapter.ViewHolderType.TYPE_TEXT
+                    )
                 )
-
-                i+=2
+                i += 2
             }
             i++
         }

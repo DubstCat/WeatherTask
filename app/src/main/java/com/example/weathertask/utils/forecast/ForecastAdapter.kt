@@ -12,7 +12,7 @@ import com.example.weathertask.databinding.ItemDaytextBinding
 import com.example.weathertask.databinding.ItemForecastBinding
 import com.example.weathertask.utils.forecast.ForecastAdapter.ViewHolderType.TYPE_FORECAST
 
-class ForecastAdapter(var forecasts: MutableList<ForecastItem>) :
+class ForecastAdapter(var forecasts: MutableList<ForecastItem> = mutableListOf()) :
     ListAdapter<ForecastItem, RecyclerView.ViewHolder>(
         ForecastDiffCallback()
     ) {

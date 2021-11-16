@@ -22,51 +22,41 @@ import io.reactivex.rxjava3.disposables.Disposable
 class ForecastFragment : Fragment() {
 
     lateinit var binding: FragmentForecastBinding
-    lateinit var adapter:ForecastAdapter
+    val adapter: ForecastAdapter = ForecastAdapter()
+    val mPresenter = ForecastDataPresenter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val mPresenter = ForecastDataPresenter()
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false)
-
         binding.rvForecast.layoutManager = LinearLayoutManager(context)
-
-        val list = mutableListOf<ForecastItem>()
-        adapter = ForecastAdapter(list)
-
         binding.rvForecast.adapter = adapter
 
-        CityObservable.name.subscribe(object:Observer<String>{
-            override fun onSubscribe(d: Disposable?) {
-                // pass
-            }
-
-            override fun onNext(t: String?) {
-                if (t!=null) {
-                    adapter.forecasts.clear()
-                    mPresenter.getForecast(t, adapter)
-                }
-            }
-
-            override fun onError(e: Throwable?) {
-                e?.printStackTrace()
-            }
-
-            override fun onComplete() {
-                Log.d("ForecastCityObserver", "onComplete")
-            }
-
-        } )
-
-
+        CityObservable.name.subscribe(getAdapterObserver())
         return binding.root
     }
 
-    private fun showWarning() {
-        adapter.forecasts = arrayListOf(ForecastItem(
-            day = "Couldn't receive data"
-            ,type = ForecastAdapter.ViewHolderType.TYPE_TEXT))
+    private fun getAdapterObserver(): Observer<String> = object : Observer<String> {
+        override fun onSubscribe(d: Disposable?) {
+            // pass
+        }
+
+        override fun onNext(t: String?) {
+            if (t != null) {
+                adapter.forecasts.clear()
+                mPresenter.getForecast(t, adapter)
+            }
+        }
+
+        override fun onError(e: Throwable?) {
+            e?.printStackTrace()
+        }
+
+        override fun onComplete() {
+            Log.d("ForecastCityObserver", "onComplete")
+        }
     }
+
+
 }

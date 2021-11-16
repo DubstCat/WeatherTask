@@ -71,8 +71,6 @@ class TodayDataPresenter {
             })
     }
 
-
-
     fun getTextDegree(deg: Int?) =
         when (deg) {
             in 0..29, in 330..360 -> "N"
