@@ -6,5 +6,6 @@
         android:icon="@drawable/weather_sunny"/>
     <item
         android:id="@+id/forecast"
-        android:title="Forecast" />
+        android:title="Forecast"
+        android:icon="@drawable/temperature_celsius"/>
 </menu>
