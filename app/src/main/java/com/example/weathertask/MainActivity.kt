@@ -28,11 +28,9 @@ import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
 import java.io.IOException
 import java.util.*
-
-
 import android.content.SharedPreferences
 
-
+r
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     lateinit var checker: Runnable
@@ -51,7 +49,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         supportActionBar?.title = "Weather"
+        binding.mainFragment.visibility = View.INVISIBLE
 
+        supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday).commit()
 
         val loadedCity = loadCity()
 
@@ -79,10 +79,10 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavBar.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.today -> {
-                    setCurrentFragment(fragmentForecast, fragmentToday)
+                    setCurrentFragment(fragmentToday)
                 }
                 R.id.forecast -> {
-                    setCurrentFragment(fragmentToday, fragmentForecast)
+                    setCurrentFragment(fragmentForecast)
                 }
             }
             false
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton("No") { dialog, _ ->
                 dialog.cancel()
-                finish()
+                android.os.Process.killProcess(android.os.Process.myPid())
             }
 
         val alert = builder.create()
@@ -170,8 +170,8 @@ class MainActivity : AppCompatActivity() {
         stopChecking = false
     }
 
-    private fun setCurrentFragment(from: Fragment, to: Fragment) {
-        supportFragmentManager.beginTransaction().hide(from).show(to).commit()
+    private fun setCurrentFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(R.id.main_fragment, fragment).commit()
     }
 
     private fun getLoadingObserver(): Observer<String> = object : Observer<String> {
@@ -184,10 +184,8 @@ class MainActivity : AppCompatActivity() {
                 saveCity(t)
             }
             binding.loagingBar.visibility = View.GONE
-            supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentForecast)
-                .hide(fragmentForecast).commit()
-            supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday)
-                .show(fragmentToday).commit()
+            binding.mainFragment.visibility = View.VISIBLE
+
         }
 
         override fun onError(e: Throwable?) {
