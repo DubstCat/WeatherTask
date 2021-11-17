@@ -22,6 +22,7 @@ import com.example.weathertask.databinding.ActivityMainBinding
 import com.example.weathertask.ui.ForecastFragment
 import com.example.weathertask.ui.TodayFragment
 import com.example.weathertask.utils.CityObservable
+import com.example.weathertask.utils.ConnectionDetector
 import com.google.android.gms.location.*
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
@@ -53,6 +54,9 @@ class MainActivity : AppCompatActivity() {
         checker = Runnable {
             if (!stopChecking)
                 checkIfGpsEnabled()
+            if(!isConnectedToInternet){
+                Toast.makeText(this, "Check network connection", Toast.LENGTH_SHORT).show()
+            }
             handler.postDelayed(checker, 1000)
         }
         handler.postDelayed(checker, 1000)
@@ -72,6 +76,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    val isConnectedToInternet:Boolean
+        get() = ConnectionDetector(applicationContext).isConnectingToInternet
 
     fun checkIfGpsEnabled() {
         val manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager;
