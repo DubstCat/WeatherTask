@@ -29,6 +29,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import java.io.IOException
 import java.util.*
 import android.content.SharedPreferences
+import android.content.res.Configuration
 
 
 class MainActivity : AppCompatActivity() {
@@ -200,9 +201,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 
     //Сохранение
     fun saveCity(city: String) {
@@ -216,5 +214,6 @@ class MainActivity : AppCompatActivity() {
         val sPref = getSharedPreferences("Save", MODE_MULTI_PROCESS)
         return sPref.getString(SAVE, "")
     }
+
 
 }
