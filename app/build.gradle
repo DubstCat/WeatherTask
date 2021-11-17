@@ -74,4 +74,7 @@ dependencies {
 
     // Location
     implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+    // Spinkit progressbar
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 }

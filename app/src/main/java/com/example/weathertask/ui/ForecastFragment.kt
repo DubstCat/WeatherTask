@@ -26,6 +26,7 @@ class ForecastFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false)
         binding.rvForecast.layoutManager = LinearLayoutManager(context)
         binding.rvForecast.adapter = adapter
@@ -41,6 +42,7 @@ class ForecastFragment : Fragment() {
 
         override fun onNext(t: String?) {
             if (t != null) {
+                binding.layoutForecast.visibility = View.VISIBLE
                 adapter.forecasts.clear()
                 adapter.notifyDataSetChanged()
                 mPresenter.getForecast(t, adapter)

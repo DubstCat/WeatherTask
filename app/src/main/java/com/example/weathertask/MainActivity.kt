@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     lateinit var checker: Runnable
     val handler = Handler(Looper.getMainLooper())
+    val fragmentToday = TodayFragment()
+    val fragmentForecast = ForecastFragment()
     val permsRequestCode = 12413423
     var stopChecking = false
     private val perms = arrayOf(
@@ -45,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         CityObservable.name.subscribe(getActionBarObserver())
 
-        supportActionBar?.title = "Couldn't retrieve data"
+        supportActionBar?.title = "Collecting data"
 
         checker = Runnable {
             if (!stopChecking)
@@ -55,14 +58,6 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed(checker, 1000)
 
         getLocation()
-
-
-        val fragmentToday = TodayFragment()
-        val fragmentForecast = ForecastFragment()
-
-        supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentForecast)
-            .hide(fragmentForecast).commit()
-        supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday).commit()
 
         binding.bottomNavBar.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -166,7 +161,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onNext(t: String?) {
+            binding.loagingBar.visibility = View.GONE
             supportActionBar?.title = "Weather"
+            supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentForecast)
+                .hide(fragmentForecast).commit()
+            supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday).show(fragmentToday).commit()
         }
 
         override fun onError(e: Throwable?) {

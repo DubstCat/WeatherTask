@@ -29,13 +29,13 @@ class TodayFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_today, container, false)
 
-
         CityObservable.name.subscribe(object : Observer<String> {
             override fun onNext(t: String?) {
                 if (t!=null){
+                    binding.layoutToday.visibility = View.VISIBLE
                     getWeatherOnLocation(t)
                 }else{
-                    binding.tvWeatherAndTemp.text = "Couldn't get location"
+                    binding.tvWeatherAndTemp.text = "Couldn't retrieve location"
                 }
             }
 
@@ -97,6 +97,7 @@ class TodayFragment : Fragment() {
     fun getWeatherOnLocation(city: String) {
         mPresenter.getTodaysWeather(city)
     }
+
 
 
     private fun onShareWeather() {
