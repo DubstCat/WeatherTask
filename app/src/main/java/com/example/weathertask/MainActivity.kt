@@ -49,9 +49,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         supportActionBar?.title = "Weather"
-        binding.mainFragment.visibility = View.INVISIBLE
 
-        supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday).commit()
+        if (!isConnectedToInternet) {
+            Toast.makeText(this, "Check network connection", Toast.LENGTH_SHORT).show()
+        }
+
+        supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentForecast)
+            .hide(fragmentForecast)
+            .add(R.id.main_fragment, fragmentToday).show(fragmentToday).commit()
 
         val loadedCity = loadCity()
 
@@ -64,9 +69,6 @@ class MainActivity : AppCompatActivity() {
         checker = Runnable {
             if (!stopChecking)
                 checkIfGpsEnabled()
-            if (!isConnectedToInternet) {
-                Toast.makeText(this, "Check network connection", Toast.LENGTH_SHORT).show()
-            }
             handler.postDelayed(checker, 1000)
         }
         handler.postDelayed(checker, 1000)
@@ -79,10 +81,10 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavBar.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.today -> {
-                    setCurrentFragment(fragmentToday)
+                    setCurrentFragment(fragmentForecast, fragmentToday)
                 }
                 R.id.forecast -> {
-                    setCurrentFragment(fragmentForecast)
+                    setCurrentFragment(fragmentToday, fragmentForecast)
                 }
             }
             false
@@ -147,8 +149,10 @@ class MainActivity : AppCompatActivity() {
                         try {
                             val adressList =
                                 geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                            CityObservable.name.onNext(adressList[0].locality)
+                            if (isConnectedToInternet)
+                                CityObservable.name.onNext(adressList[0].locality)
                         } catch (e: IOException) {
+                            e.printStackTrace()
                             Toast.makeText(
                                 this@MainActivity,
                                 "Your location is not found",
@@ -170,8 +174,8 @@ class MainActivity : AppCompatActivity() {
         stopChecking = false
     }
 
-    private fun setCurrentFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.main_fragment, fragment).commit()
+    private fun setCurrentFragment(from: Fragment, to: Fragment) {
+        supportFragmentManager.beginTransaction().hide(from).show(to).commit()
     }
 
     private fun getLoadingObserver(): Observer<String> = object : Observer<String> {
@@ -184,7 +188,6 @@ class MainActivity : AppCompatActivity() {
                 saveCity(t)
             }
             binding.loagingBar.visibility = View.GONE
-            binding.mainFragment.visibility = View.VISIBLE
 
         }
 

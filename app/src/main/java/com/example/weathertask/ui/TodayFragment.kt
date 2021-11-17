@@ -30,10 +30,12 @@ class TodayFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_today, container, false)
 
+        setViewsVisibility(View.GONE)
+
         CityObservable.name.subscribe(object : Observer<String> {
             override fun onNext(t: String?) {
                 if (t!=null){
-                    binding.layoutToday.visibility = View.VISIBLE
+                    setViewsVisibility(View.VISIBLE)
                     getWeatherOnLocation(t)
                 }else{
                     binding.tvWeatherAndTemp.text = "Couldn't retrieve location"
@@ -53,6 +55,8 @@ class TodayFragment : Fragment() {
             }
 
         })
+
+
 
 
         mPresenter.todaysWeatherObservable.subscribe(object : Observer<TodaysWeather> {
@@ -100,6 +104,27 @@ class TodayFragment : Fragment() {
     }
 
 
+    fun setViewsVisibility(i:Int){
+        binding.apply {
+            tvWeatherAndTemp.visibility = i
+            tvCity.visibility = i
+            tvShare.visibility = i
+            tvTodaysHumidity.visibility = i
+            tvTodaysPressure.visibility = i
+            tvTodaysRainfall.visibility = i
+            tvWeatherAndTemp.visibility = i
+            tvTodaysWindSpeed.visibility = i
+            tvWindDegree.visibility = i
+            ivHumidity.visibility = i
+            ivMain.visibility = i
+            ivPressure.visibility = i
+            ivRainfall.visibility = i
+            ivWindDegree.visibility = i
+            ivWindSpeed.visibility = i
+            divider.visibility = i
+            divider2.visibility = i
+        }
+    }
 
     private fun onShareWeather() {
         val sendIntent = Intent()

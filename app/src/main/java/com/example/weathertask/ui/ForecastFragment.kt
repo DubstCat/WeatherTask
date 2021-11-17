@@ -30,6 +30,7 @@ class ForecastFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false)
         binding.rvForecast.layoutManager = LinearLayoutManager(context)
         binding.rvForecast.adapter = adapter
+        binding.rvForecast.visibility = View.GONE
 
         CityObservable.name.subscribe(getAdapterObserver())
         return binding.root
@@ -42,7 +43,7 @@ class ForecastFragment : Fragment() {
 
         override fun onNext(t: String?) {
             if (t != null) {
-                binding.layoutForecast.visibility = View.VISIBLE
+                binding.rvForecast.visibility = View.VISIBLE
                 adapter.forecasts.clear()
                 adapter.notifyDataSetChanged()
                 mPresenter.getForecast(t, adapter)
