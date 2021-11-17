@@ -52,9 +52,10 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         supportActionBar?.title = "Weather"
 
+
         val loadedCity = loadCity()
 
-        if (loadedCity != "") {
+        if (loadedCity != "" && isConnectedToInternet) {
             CityObservable.name.onNext(loadCity())
         }
 

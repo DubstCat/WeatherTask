@@ -12,6 +12,7 @@ import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentTodayBinding
 import com.example.weathertask.presenters.TodayDataPresenter
 import com.example.weathertask.utils.CityObservable
+import com.example.weathertask.utils.ConnectionDetector
 import com.example.weathertask.utils.today.TodaysWeather
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
