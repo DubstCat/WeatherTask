@@ -30,6 +30,9 @@ import java.io.IOException
 import java.util.*
 
 
+import android.content.SharedPreferences
+
+
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     lateinit var checker: Runnable
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     val fragmentToday = TodayFragment()
     val fragmentForecast = ForecastFragment()
     val permsRequestCode = 12413423
+    val SAVE = "SAVE"
     var stopChecking = false
     private val perms = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -46,15 +50,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        supportActionBar?.title = "Weather"
 
-        CityObservable.name.subscribe(getActionBarObserver())
+        val loadedCity = loadCity()
 
-        supportActionBar?.title = "Collecting data"
+        if (loadedCity != "") {
+            CityObservable.name.onNext(loadCity())
+        }
+
+        CityObservable.name.subscribe(getLoadingObserver())
 
         checker = Runnable {
             if (!stopChecking)
                 checkIfGpsEnabled()
-            if(!isConnectedToInternet){
+            if (!isConnectedToInternet) {
                 Toast.makeText(this, "Check network connection", Toast.LENGTH_SHORT).show()
             }
             handler.postDelayed(checker, 1000)
@@ -62,7 +71,10 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed(checker, 1000)
 
         getLocation()
+        setupNavBar()
+    }
 
+    private fun setupNavBar() {
         binding.bottomNavBar.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.today -> {
@@ -76,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    val isConnectedToInternet:Boolean
+    val isConnectedToInternet: Boolean
         get() = ConnectionDetector(applicationContext).isConnectingToInternet
 
     fun checkIfGpsEnabled() {
@@ -102,8 +114,8 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
 
-        val alert = builder.create();
-        alert.show();
+        val alert = builder.create()
+        alert.show()
     }
 
     fun getLocation() {
@@ -161,17 +173,20 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().hide(from).show(to).commit()
     }
 
-    private fun getActionBarObserver(): Observer<String> = object : Observer<String> {
+    private fun getLoadingObserver(): Observer<String> = object : Observer<String> {
         override fun onSubscribe(d: Disposable?) {
             // pass
         }
 
         override fun onNext(t: String?) {
+            if (t != null) {
+                saveCity(t)
+            }
             binding.loagingBar.visibility = View.GONE
-            supportActionBar?.title = "Weather"
             supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentForecast)
                 .hide(fragmentForecast).commit()
-            supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday).show(fragmentToday).commit()
+            supportFragmentManager.beginTransaction().add(R.id.main_fragment, fragmentToday)
+                .show(fragmentToday).commit()
         }
 
         override fun onError(e: Throwable?) {
@@ -185,6 +200,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    //Сохранение
+    fun saveCity(city: String) {
+        val sPref = getSharedPreferences("Save", MODE_MULTI_PROCESS)
+        val ed: SharedPreferences.Editor = sPref.edit()
+        ed.putString(SAVE, city).apply()
+    }
+
+    //Загрузка
+    fun loadCity(): String? {
+        val sPref = getSharedPreferences("Save", MODE_MULTI_PROCESS)
+        return sPref.getString(SAVE, "")
     }
 
 }
