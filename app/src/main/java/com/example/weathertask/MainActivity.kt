@@ -30,7 +30,7 @@ import java.io.IOException
 import java.util.*
 import android.content.SharedPreferences
 
-r
+
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     lateinit var checker: Runnable
