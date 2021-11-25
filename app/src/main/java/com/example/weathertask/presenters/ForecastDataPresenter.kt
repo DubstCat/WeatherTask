@@ -36,7 +36,7 @@ class ForecastDataPresenter {
         service = retrofit.create(WeatherApi::class.java)
     }
 
-    fun getForecast(city: String, adapter: ForecastAdapter): MutableList<ForecastItem> {
+    fun getForecast(city: String, adapter: ForecastAdapter) {
         val forecasts = mutableListOf<ForecastItem>()
         service.getForecast(city).enqueue(object : Callback<ForecastJsonResponse> {
             override fun onResponse(
@@ -67,7 +67,6 @@ class ForecastDataPresenter {
                 t.printStackTrace()
             }
         })
-        return forecasts
     }
 
 
@@ -115,6 +114,5 @@ class ForecastDataPresenter {
         "Saturday" -> 5
         "Sunday" -> 6
         else -> 0
-
     }
 }

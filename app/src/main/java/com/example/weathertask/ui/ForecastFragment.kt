@@ -28,9 +28,7 @@ class ForecastFragment : Fragment() {
     ): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false)
-        binding.rvForecast.layoutManager = LinearLayoutManager(context)
         binding.rvForecast.adapter = adapter
-        binding.rvForecast.visibility = View.GONE
 
         CityObservable.name.subscribe(getAdapterObserver())
         return binding.root
@@ -58,5 +56,4 @@ class ForecastFragment : Fragment() {
             Log.d("ForecastCityObserver", "onComplete")
         }
     }
-
 }

@@ -29,7 +29,6 @@ import io.reactivex.rxjava3.disposables.Disposable
 import java.io.IOException
 import java.util.*
 import android.content.SharedPreferences
-import android.content.res.Configuration
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,9 +37,11 @@ class MainActivity : AppCompatActivity() {
     val handler = Handler(Looper.getMainLooper())
     val fragmentToday = TodayFragment()
     val fragmentForecast = ForecastFragment()
+    var currentFragment: Fragment = fragmentToday
     val permsRequestCode = 12413423
-    val SAVE = "SAVE"
+    var isViewResumed = false
     var stopChecking = false
+    val SAVE = "SAVE"
     private val perms = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -96,6 +97,7 @@ class MainActivity : AppCompatActivity() {
         get() = ConnectionDetector(applicationContext).isConnectingToInternet
 
     fun checkIfGpsEnabled() {
+        if (!isViewResumed) return
         val manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager;
 
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -103,6 +105,7 @@ class MainActivity : AppCompatActivity() {
             stopChecking = true
         }
     }
+
 
     fun buildAlertMessageNoGps() {
         val builder = AlertDialog.Builder(this);
@@ -173,10 +176,23 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         stopChecking = false
+        isViewResumed = true
+        if (currentFragment == fragmentToday) {
+            setCurrentFragment(fragmentForecast, fragmentToday)
+        } else {
+            setCurrentFragment(fragmentToday, fragmentForecast)
+        }
     }
+
+    override fun onPause() {
+        super.onPause()
+        isViewResumed = false
+    }
+
 
     private fun setCurrentFragment(from: Fragment, to: Fragment) {
         supportFragmentManager.beginTransaction().hide(from).show(to).commit()
+        currentFragment = to
     }
 
     private fun getLoadingObserver(): Observer<String> = object : Observer<String> {
