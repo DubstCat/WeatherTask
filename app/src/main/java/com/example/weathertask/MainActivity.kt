@@ -62,8 +62,8 @@ class MainActivity : AppCompatActivity() {
 
         val loadedCity = loadCity()
 
-        if (loadedCity != "" && isConnectedToInternet) {
-            CityObservable.name.onNext(loadCity())
+        if (loadedCity != "" && loadedCity!=null && isConnectedToInternet) {
+            fragmentToday.getWeatherOnLocation(loadedCity)
         }
 
         CityObservable.name.subscribe(getLoadingObserver())
