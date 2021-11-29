@@ -16,27 +16,24 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
 class ForecastDataPresenter {
-    private val retrofit: Retrofit
-    private val service: WeatherApi
 
 
-    init {
+    fun getForecast(city: String, adapter: ForecastAdapter) {
+
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BASIC
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(logging)
             .build()
 
-        retrofit = Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
             .baseUrl("http://api.openweathermap.org/data/2.5/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        service = retrofit.create(WeatherApi::class.java)
-    }
+        val service = retrofit.create(WeatherApi::class.java)
 
-    fun getForecast(city: String, adapter: ForecastAdapter) {
         val forecasts = mutableListOf<ForecastItem>()
         service.getForecast(city).enqueue(object : Callback<ForecastJsonResponse> {
             override fun onResponse(

@@ -1,47 +1,39 @@
 package com.example.weathertask.presenters
 
-import androidx.lifecycle.MutableLiveData
-import com.example.weathertask.utils.today.TodaysWeather
 import com.example.weathertask.TodaysWeatherJsonResponse
 import com.example.weathertask.retrofit.WeatherApi
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.functions.Consumer
+import com.example.weathertask.utils.today.TodaysWeather
 import io.reactivex.rxjava3.subjects.PublishSubject
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import okhttp3.OkHttpClient
-
-import okhttp3.logging.HttpLoggingInterceptor
 
 
 class TodayDataPresenter {
-    private val retrofit: Retrofit
-    private val service: WeatherApi
-    lateinit var todaysWeather:TodaysWeather
+    lateinit var todaysWeather: TodaysWeather
     var todaysWeatherObservable = PublishSubject.create<TodaysWeather>()
 
-    init {
+
+    fun getTodaysWeather(city: String) {
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BASIC
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(logging)
             .build()
 
-        retrofit = Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
             .baseUrl("http://api.openweathermap.org/data/2.5/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
 
+        val service = retrofit.create(WeatherApi::class.java)
 
-        service = retrofit.create(WeatherApi::class.java)
-    }
-
-    fun getTodaysWeather(city:String) {
         service.getTodaysWeather(city)
             .enqueue(object : Callback<TodaysWeatherJsonResponse> {
                 override fun onResponse(
@@ -59,9 +51,9 @@ class TodayDataPresenter {
                             ?.minus(273)).toString()
                                 + "°C | " +
                                 (response.body()?.weather?.get(0)?.main ?: ("")),
-                        weather = response.body()?.weather?.get(0)?.main?:("")
+                        weather = response.body()?.weather?.get(0)?.main ?: ("")
                     )
-                        todaysWeatherObservable.onNext(todaysWeather)
+                    todaysWeatherObservable.onNext(todaysWeather)
                 }
 
                 override fun onFailure(call: Call<TodaysWeatherJsonResponse>, t: Throwable) {

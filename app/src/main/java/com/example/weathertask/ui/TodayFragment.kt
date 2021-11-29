@@ -11,49 +11,32 @@ import androidx.fragment.app.Fragment
 import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentTodayBinding
 import com.example.weathertask.presenters.TodayDataPresenter
+import com.example.weathertask.retrofit.ForecastJsonResponse
 import com.example.weathertask.utils.CityObservable
 import com.example.weathertask.utils.today.TodaysWeather
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 
 class TodayFragment : Fragment() {
     lateinit var binding: FragmentTodayBinding
-
-
+    lateinit var observer: Observer<String>
     var mPresenter = TodayDataPresenter()
+    var disposable: Disposable? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_today, container, false)
-
         setViewsVisibility(View.GONE)
 
-        CityObservable.name.subscribe(object : Observer<String> {
-            override fun onNext(t: String?) {
-                if (t!=null){
-                    setViewsVisibility(View.VISIBLE)
-                    getWeatherOnLocation(t)
-                }else{
-                    binding.tvWeatherAndTemp.text = "Couldn't retrieve location"
-                }
-            }
+        observer = getTodaysObserver()
 
-            override fun onError(e: Throwable?) {
-                e?.printStackTrace()
-            }
-
-            override fun onComplete() {
-                Log.d("CityObservable", "onComplete")
-            }
-
-            override fun onSubscribe(d: Disposable?) {
-                // pass
-            }
-
-        })
+        CityObservable.name
+            .subscribeOn(Schedulers.io())
+            .subscribe(observer)
 
 
 
@@ -103,7 +86,31 @@ class TodayFragment : Fragment() {
     }
 
 
-    fun setViewsVisibility(i:Int){
+    fun getTodaysObserver(): Observer<String> = object : Observer<String> {
+        override fun onNext(t: String?) {
+            if (t != null) {
+                setViewsVisibility(View.VISIBLE)
+                getWeatherOnLocation(t)
+            } else {
+                binding.tvWeatherAndTemp.text = "Couldn't retrieve location"
+            }
+        }
+
+        override fun onError(e: Throwable?) {
+            e?.printStackTrace()
+        }
+
+        override fun onComplete() {
+            Log.d("CityObservable", "onComplete")
+        }
+
+        override fun onSubscribe(d: Disposable?) {
+            disposable = d
+        }
+
+    }
+
+    fun setViewsVisibility(i: Int) {
         binding.apply {
             tvWeatherAndTemp.visibility = i
             tvCity.visibility = i
@@ -134,5 +141,11 @@ class TodayFragment : Fragment() {
         )
         sendIntent.type = "text/plain"
         startActivity(sendIntent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.unbind()
+        disposable?.dispose()
     }
 }

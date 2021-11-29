@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
         val loadedCity = loadCity()
 
-        if (loadedCity != "" && loadedCity!=null && isConnectedToInternet) {
+        if (loadedCity != "" && loadedCity != null && isConnectedToInternet) {
             fragmentToday.getWeatherOnLocation(loadedCity)
         }
 
@@ -193,6 +193,11 @@ class MainActivity : AppCompatActivity() {
     private fun setCurrentFragment(from: Fragment, to: Fragment) {
         supportFragmentManager.beginTransaction().hide(from).show(to).commit()
         currentFragment = to
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.unbind()
     }
 
     private fun getLoadingObserver(): Observer<String> = object : Observer<String> {

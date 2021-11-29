@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weathertask.R
 import com.example.weathertask.databinding.FragmentForecastBinding
 import com.example.weathertask.presenters.ForecastDataPresenter
@@ -21,6 +20,8 @@ class ForecastFragment : Fragment() {
     lateinit var binding: FragmentForecastBinding
     val adapter: ForecastAdapter = ForecastAdapter()
     val mPresenter = ForecastDataPresenter()
+    var disposable: Disposable? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,13 +31,15 @@ class ForecastFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false)
         binding.rvForecast.adapter = adapter
 
-        CityObservable.name.subscribe(getAdapterObserver())
+        val observer = getAdapterObserver()
+
+        CityObservable.name.subscribe(observer)
         return binding.root
     }
 
     private fun getAdapterObserver(): Observer<String> = object : Observer<String> {
         override fun onSubscribe(d: Disposable?) {
-            // pass
+            disposable = d
         }
 
         override fun onNext(t: String?) {
@@ -55,5 +58,12 @@ class ForecastFragment : Fragment() {
         override fun onComplete() {
             Log.d("ForecastCityObserver", "onComplete")
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        binding.unbind()
+        disposable?.dispose()
     }
 }
