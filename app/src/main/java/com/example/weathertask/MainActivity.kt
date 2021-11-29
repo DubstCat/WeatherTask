@@ -242,5 +242,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         binding.unbind()
         disposable?.dispose()
+        disposable = null
     }
 }

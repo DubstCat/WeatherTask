@@ -91,5 +91,8 @@ class ForecastFragment : Fragment() {
 
         binding.unbind()
         cityDisposable?.dispose()
+        adapterDisposable?.dispose()
+        cityDisposable = null
+        adapterDisposable = null
     }
 }

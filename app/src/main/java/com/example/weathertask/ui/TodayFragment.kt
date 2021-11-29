@@ -146,5 +146,6 @@ class TodayFragment : Fragment() {
         super.onDestroy()
         binding.unbind()
         disposable?.dispose()
+        disposable = null
     }
 }
