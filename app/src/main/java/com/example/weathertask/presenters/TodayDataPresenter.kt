@@ -1,15 +1,13 @@
 package com.example.weathertask.presenters
 
-import com.example.weathertask.TodaysWeatherJsonResponse
 import com.example.weathertask.retrofit.WeatherApi
 import com.example.weathertask.utils.today.TodaysWeather
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 
@@ -28,39 +26,29 @@ class TodayDataPresenter {
         val retrofit = Retrofit.Builder()
             .baseUrl("http://api.openweathermap.org/data/2.5/")
             .client(client)
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
 
         val service = retrofit.create(WeatherApi::class.java)
 
-        service.getTodaysWeather(city)
-            .enqueue(object : Callback<TodaysWeatherJsonResponse> {
-                override fun onResponse(
-                    call: Call<TodaysWeatherJsonResponse>,
-                    response: Response<TodaysWeatherJsonResponse>
-                ) {
-                    todaysWeather = TodaysWeather(
-                        city = response.body()?.name.toString() + ", " + response.body()?.sys?.country,
-                        humidity = response.body()?.main?.humidity?.toString() + " %",
-                        rainfall = "1 mm",
-                        pressure = response.body()?.main?.pressure.toString() + " hPa",
-                        windSpeed = response.body()?.wind?.speed?.toInt().toString() + " kmH",
-                        windDegree = getTextDegree(response.body()?.wind?.deg?.toInt()),
-                        tempAndWeather = (response.body()?.main?.temp?.toInt()
-                            ?.minus(273)).toString()
-                                + "°C | " +
-                                (response.body()?.weather?.get(0)?.main ?: ("")),
-                        weather = response.body()?.weather?.get(0)?.main ?: ("")
-                    )
-                    todaysWeatherObservable.onNext(todaysWeather)
-                }
-
-                override fun onFailure(call: Call<TodaysWeatherJsonResponse>, t: Throwable) {
-                    t.printStackTrace()
-
-                }
-            })
+        service.getTodaysWeather(city).subscribeOn(Schedulers.io()).subscribe({
+            todaysWeather = TodaysWeather(
+                city = it.name.toString() + ", " +it.sys?.country,
+                humidity = it.main?.humidity?.toString() + " %",
+                rainfall = "1 mm",
+                pressure = it.main?.pressure.toString() + " hPa",
+                windSpeed = it.wind?.speed?.toInt().toString() + " kmH",
+                windDegree = getTextDegree(it.wind?.deg?.toInt()),
+                tempAndWeather = (it.main?.temp?.toInt()
+                    ?.minus(273)).toString()
+                        + "°C | " +
+                        (it.weather?.get(0)?.main ?: ("")),
+                weather = it.weather?.get(0)?.main ?: ("")
+            )
+            todaysWeatherObservable.onNext(todaysWeather)
+        }, {throwable -> throwable.printStackTrace()})
     }
 
     fun getTextDegree(deg: Int?) =

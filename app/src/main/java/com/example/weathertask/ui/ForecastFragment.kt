@@ -12,15 +12,18 @@ import com.example.weathertask.databinding.FragmentForecastBinding
 import com.example.weathertask.presenters.ForecastDataPresenter
 import com.example.weathertask.utils.CityObservable
 import com.example.weathertask.utils.forecast.ForecastAdapter
+import com.example.weathertask.utils.forecast.ForecastItem
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class ForecastFragment : Fragment() {
 
     lateinit var binding: FragmentForecastBinding
     val adapter: ForecastAdapter = ForecastAdapter()
     val mPresenter = ForecastDataPresenter()
-    var disposable: Disposable? = null
+    var cityDisposable: Disposable? = null
+    var adapterDisposable: Disposable? = null
 
 
     override fun onCreateView(
@@ -31,23 +34,46 @@ class ForecastFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false)
         binding.rvForecast.adapter = adapter
 
-        val observer = getAdapterObserver()
+        val cityObserver = getCityObserver()
+        val adapterObserver = getAdapterObserver()
 
-        CityObservable.name.subscribe(observer)
+        CityObservable.name.subscribe(cityObserver)
+        mPresenter.forecastObservable.subscribeOn(Schedulers.io()).subscribe(adapterObserver)
+
         return binding.root
     }
 
-    private fun getAdapterObserver(): Observer<String> = object : Observer<String> {
+    private fun getAdapterObserver(): Observer<MutableList<ForecastItem>> = object : Observer<MutableList<ForecastItem>>{
         override fun onSubscribe(d: Disposable?) {
-            disposable = d
+            adapterDisposable = d
+        }
+
+        override fun onNext(t: MutableList<ForecastItem>?) {
+            adapter.forecasts.clear()
+            adapter.forecasts.addAll(t?: mutableListOf())
+            adapter.notifyDataSetChanged()
+        }
+
+        override fun onError(e: Throwable?) {
+            e?.printStackTrace()
+        }
+
+        override fun onComplete() {
+            // pass
+        }
+
+    }
+
+    private fun getCityObserver(): Observer<String> = object : Observer<String> {
+        override fun onSubscribe(d: Disposable?) {
+            cityDisposable = d
         }
 
         override fun onNext(t: String?) {
             if (t != null) {
                 binding.rvForecast.visibility = View.VISIBLE
-                adapter.forecasts.clear()
-                adapter.notifyDataSetChanged()
-                mPresenter.getForecast(t, adapter)
+
+                mPresenter.getForecast(t)
             }
         }
 
@@ -64,6 +90,6 @@ class ForecastFragment : Fragment() {
         super.onDestroy()
 
         binding.unbind()
-        disposable?.dispose()
+        cityDisposable?.dispose()
     }
 }

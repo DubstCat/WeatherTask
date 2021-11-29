@@ -2,6 +2,7 @@ package com.example.weathertask.retrofit
 
 import com.example.weathertask.TodaysWeatherJsonResponse
 import com.example.weathertask.utils.Constants.apikey
+import io.reactivex.rxjava3.core.Observable
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -16,11 +17,11 @@ interface WeatherApi {
         @Query("q") city: String,
         @Query("appid") appid: String = apikey
 
-    ): Call<TodaysWeatherJsonResponse>
+    ): Observable<TodaysWeatherJsonResponse>
 
     @GET("forecast")
     fun getForecast(
         @Query("q") city: String,
         @Query("appid") appid: String = apikey
-    ): Call<ForecastJsonResponse>
+    ): Observable<ForecastJsonResponse>
 }

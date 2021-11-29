@@ -6,19 +6,20 @@ import com.example.weathertask.retrofit.WeatherApi
 import com.example.weathertask.utils.forecast.DaysOfTheWeek
 import com.example.weathertask.utils.forecast.ForecastAdapter
 import com.example.weathertask.utils.forecast.ForecastItem
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
 class ForecastDataPresenter {
 
+    val forecastObservable = PublishSubject.create<MutableList<ForecastItem>>()
 
-    fun getForecast(city: String, adapter: ForecastAdapter) {
+    fun getForecast(city: String) {
 
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BASIC
@@ -29,41 +30,29 @@ class ForecastDataPresenter {
         val retrofit = Retrofit.Builder()
             .baseUrl("http://api.openweathermap.org/data/2.5/")
             .client(client)
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val service = retrofit.create(WeatherApi::class.java)
 
         val forecasts = mutableListOf<ForecastItem>()
-        service.getForecast(city).enqueue(object : Callback<ForecastJsonResponse> {
-            override fun onResponse(
-                call: Call<ForecastJsonResponse>,
-                response: Response<ForecastJsonResponse>
-            ) {
-                if (response.isSuccessful) {
-
-                    val responseList = mutableListOf<ForecastJsonResponse.List>()
-                    responseList.addAll(response.body()?.list?.toMutableList()!!)
-                    responseList.forEach {
-                        forecasts.add(
-                            ForecastItem(
-                                timestamp = it.dtTxt?.subSequence(11, 16)?.toString(),
-                                temp = (it.main?.temp?.toInt()?.minus(273)).toString() + "°C",
-                                weather = it.weather?.get(0)?.main,
-                                day = it.dtTxt?.subSequence(8, 10)?.toString()
-                            )
-                        )
-                    }
-                    adapter.forecasts.addAll(forecasts)
-                    addDayText(adapter.forecasts)
-                    adapter.notifyDataSetChanged()
-                }
+        service.getForecast(city).subscribeOn(Schedulers.io()).subscribe( {forecastJsonResponse ->
+            val responseList = mutableListOf<ForecastJsonResponse.List>()
+            responseList.addAll(forecastJsonResponse.list?.toMutableList()!!)
+            responseList.forEach {
+                forecasts.add(
+                    ForecastItem(
+                        timestamp = it.dtTxt?.subSequence(11, 16)?.toString(),
+                        temp = (it.main?.temp?.toInt()?.minus(273)).toString() + "°C",
+                        weather = it.weather?.get(0)?.main,
+                        day = it.dtTxt?.subSequence(8, 10)?.toString()
+                    )
+                )
             }
-
-            override fun onFailure(call: Call<ForecastJsonResponse>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+            addDayText(forecasts)
+            forecastObservable.onNext(forecasts)}, {throwable -> throwable.printStackTrace()}
+        )
     }
 
 

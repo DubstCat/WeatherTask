@@ -29,6 +29,8 @@ import io.reactivex.rxjava3.disposables.Disposable
 import java.io.IOException
 import java.util.*
 import android.content.SharedPreferences
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     val fragmentToday = TodayFragment()
     val fragmentForecast = ForecastFragment()
     var currentFragment: Fragment = fragmentToday
-    var disposable:Disposable? = null
+    var disposable: Disposable? = null
     val permsRequestCode = 12413423
     var isViewResumed = false
     var stopChecking = false
@@ -67,7 +69,11 @@ class MainActivity : AppCompatActivity() {
             fragmentToday.getWeatherOnLocation(loadedCity)
         }
 
-        CityObservable.name.subscribe(getLoadingObserver())
+        val observer = getLoadingObserver()
+
+        CityObservable.name
+            .subscribeOn(Schedulers.io())
+            .subscribe(observer)
 
         checker = Runnable {
             if (!stopChecking)
@@ -195,7 +201,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().hide(from).show(to).commit()
         currentFragment = to
     }
-
 
 
     private fun getLoadingObserver(): Observer<String> = object : Observer<String> {

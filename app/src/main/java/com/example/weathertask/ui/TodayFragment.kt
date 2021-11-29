@@ -35,7 +35,6 @@ class TodayFragment : Fragment() {
         observer = getTodaysObserver()
 
         CityObservable.name
-            .subscribeOn(Schedulers.io())
             .subscribe(observer)
 
 
