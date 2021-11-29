@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     val fragmentToday = TodayFragment()
     val fragmentForecast = ForecastFragment()
     var currentFragment: Fragment = fragmentToday
+    var disposable:Disposable? = null
     val permsRequestCode = 12413423
     var isViewResumed = false
     var stopChecking = false
@@ -195,14 +196,11 @@ class MainActivity : AppCompatActivity() {
         currentFragment = to
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        binding.unbind()
-    }
+
 
     private fun getLoadingObserver(): Observer<String> = object : Observer<String> {
         override fun onSubscribe(d: Disposable?) {
-            // pass
+            disposable = d
         }
 
         override fun onNext(t: String?) {
@@ -210,7 +208,6 @@ class MainActivity : AppCompatActivity() {
                 saveCity(t)
             }
             binding.loagingBar.visibility = View.GONE
-
         }
 
         override fun onError(e: Throwable?) {
@@ -236,5 +233,9 @@ class MainActivity : AppCompatActivity() {
         return sPref.getString(SAVE, "")
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.unbind()
+        disposable?.dispose()
+    }
 }
