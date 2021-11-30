@@ -4,10 +4,13 @@ import com.example.weathertask.retrofit.WeatherApi
 import com.example.weathertask.utils.today.TodaysWeather
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
+
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
+
+
 import retrofit2.converter.gson.GsonConverterFactory
 
 
@@ -33,7 +36,9 @@ class TodayDataPresenter {
 
         val service = retrofit.create(WeatherApi::class.java)
 
-        service.getTodaysWeather(city).subscribeOn(Schedulers.io()).subscribe({
+        service.getTodaysWeather(city)
+            .subscribeOn(Schedulers.io())
+            .subscribe({
             todaysWeather = TodaysWeather(
                 city = it.name.toString() + ", " +it.sys?.country,
                 humidity = it.main?.humidity?.toString() + " %",
