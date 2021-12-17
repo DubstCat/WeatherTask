@@ -1,4 +1,8 @@
-# Weather task for innowise group
+# Weather task
 
-###### P. S. При первом запуске может долго искать местоположение, но потом сохраняет последнее в sharedPreferences. Также иконка осадков была добавлена для соответствия с примером дизайна в тз и не отображает реальных данных (их в ответе api просто нет)
-###### Буду рад дельному код ревью :)
+###### Used technologies:
+* MVP pattern
+* Google fused location
+* Retrofit
+* RxJava
+* DataBinding
